@@ -98,8 +98,9 @@ if __name__ == '__main__':
     # density
     rho = 1
     # viscosity
-    mu = 1e-1
+    mu = 1
     # Re = rho/mu
+    Re = rho * u0 / mu
 
     # build a core network model
     network = Network().build()
@@ -180,137 +181,24 @@ if __name__ == '__main__':
     v = v.reshape(x.shape)
     p = p.reshape(x.shape)
     # plot test results
+
+    filename_suffix = "_cylinder_" + str(Re) + ".png"
+
     fig = plt.figure(figsize=(16, 8))
     contour(x, y, p, 'p')
     plt.tight_layout()
-    plt.show()
+    plt.savefig('p' + filename_suffix, dpi=300)
 
     fig = plt.figure(figsize=(16, 8))
     contour(x, y, u, 'u')
     plt.tight_layout()
-    plt.show()
+    plt.savefig('u' + filename_suffix, dpi=300)
 
     fig = plt.figure(figsize=(16, 8))
     contour(x, y, v, 'v')
     plt.tight_layout()
-    plt.show()
+    plt.savefig('v' + filename_suffix, dpi=300)
+
+    # save model 
+    network.save('models/pinn_cylinder_' + str(Re) + '.h5')
     
-
-    ###########################
-    from matplotlib.patches import Circle
-    font1 = {'family':'serif','size':20}
-
-    fig0, ax0 = plt.subplots(1, 1,figsize=(20,8))
-    cf0 = ax0.contourf(x, y, p, np.arange(-0.2, 1, .02),
-                   extend='both',cmap='rainbow')
-    cbar0 = plt.colorbar(cf0, pad=0.03, aspect=25, format='%.0e')
-    plt.title("p", fontdict = font1)
-    plt.xlabel("x", fontdict = font1)
-    plt.ylabel("y", fontdict = font1)
-    ax0.add_patch(Circle((0.5, 0.5), 0.1,color="black"))
-    plt.tick_params(axis='both', which='major', labelsize=15)
-    cbar0.ax.tick_params(labelsize=15)
-    plt.show()
-
-    ###########################
-
-    fig0, ax0 = plt.subplots(1, 1, figsize=(20,8))
-    cf0 = ax0.contourf(x, y, u, np.arange(-0.5, 1.1, .02),
-                   extend='both',cmap='rainbow')
-    cbar0 = plt.colorbar(cf0, )
-    plt.title("u", fontdict = font1)
-    plt.xlabel("x", fontdict = font1)
-    plt.ylabel("y", fontdict = font1)
-    ax0.add_patch(Circle((0.5, 0.5), 0.1,color="black"))
-    plt.tick_params(axis='both', which='major', labelsize=15)
-    cbar0.ax.tick_params(labelsize=15)
-    plt.show()
-
-    ###########################
-
-    fig0, ax0 = plt.subplots(1, 1,figsize=(20,8))
-    cf0 = ax0.contourf(x, y, v, np.arange(-0.4, 0.4, .02),
-                   extend='both',cmap='rainbow')
-    cbar0 = plt.colorbar(cf0, pad=0.03, aspect=25, format='%.0e')
-    plt.title("v", fontdict = font1)
-    plt.xlabel("x", fontdict = font1)
-    plt.ylabel("y", fontdict = font1)
-    ax0.add_patch(Circle((0.5, 0.5), 0.1,color="black"))
-    plt.tick_params(axis='both', which='major', labelsize=15)
-    cbar0.ax.tick_params(labelsize=15)
-    plt.show()
-
-    ############################ 
-
-    x = np.linspace(0.3, 1, num_test_samples)
-    y = np.linspace(0.3, 0.7, num_test_samples)
-    x, y = np.meshgrid(x, y)
-    xy = np.stack([x.flatten(), y.flatten()], axis=-1)
-    # predict (psi, p)
-    u_v_p = network.predict(xy, batch_size=len(xy))
-    u, v, p = [ u_v_p[..., i].reshape(x.shape) for i in range(u_v_p.shape[-1]) ]
-    # compute (u, v)
-    u = u.reshape(x.shape)
-    v = v.reshape(x.shape)
-    p = p.reshape(x.shape)
-    # plot test results
-    
-    fig = plt.figure(figsize=(15, 8))
-    #contour(gs[0, 0], x, y, psi, 'psi')
-    contour(x, y, p, 'p')
-    plt.tight_layout()
-    plt.show()
-
-    fig = plt.figure(figsize=(15, 8))
-    contour(x, y, u, 'u')
-    plt.tight_layout()
-    plt.show()
-
-    fig = plt.figure(figsize=(15, 8))
-    contour(x, y, v, 'v')
-    plt.tight_layout()
-    plt.show()
-
-    ###########################
-    from matplotlib.patches import Circle
-    font1 = {'family':'serif','size':20}
-
-    fig0, ax0 = plt.subplots(1, 1,figsize=(18,8))
-    cf0 = ax0.contourf(x, y, p, np.arange(-0.2, 0.6, .02),
-                   extend='both',cmap='rainbow')
-    cbar0 = plt.colorbar(cf0, pad=0.03, aspect=25, format='%.0e')
-    plt.title("p", fontdict = font1)
-    plt.xlabel("x", fontdict = font1)
-    plt.ylabel("y", fontdict = font1)
-    ax0.add_patch(Circle((0.5, 0.5), 0.1,color="black"))
-    plt.tick_params(axis='both', which='major', labelsize=15)
-    cbar0.ax.tick_params(labelsize=15)
-    plt.show()
-
-    ###########################
-
-    fig0, ax0 = plt.subplots(1, 1, figsize=(18,8))
-    cf0 = ax0.contourf(x, y, u, np.arange(-0.5, 1.1, .02),
-                   extend='both',cmap='rainbow')
-    cbar0 = plt.colorbar(cf0, )
-    plt.title("u", fontdict = font1)
-    plt.xlabel("x", fontdict = font1)
-    plt.ylabel("y", fontdict = font1)
-    ax0.add_patch(Circle((0.5, 0.5), 0.1,color="black"))
-    plt.tick_params(axis='both', which='major', labelsize=15)
-    cbar0.ax.tick_params(labelsize=15)
-    plt.show()
-
-    ###########################
-
-    fig0, ax0 = plt.subplots(1, 1,figsize=(18,8))
-    cf0 = ax0.contourf(x, y, v, np.arange(-0.4, 0.4, .02),
-                   extend='both',cmap='rainbow')
-    cbar0 = plt.colorbar(cf0, pad=0.03, aspect=25, format='%.0e')
-    plt.title("v", fontdict = font1)
-    plt.xlabel("x", fontdict = font1)
-    plt.ylabel("y", fontdict = font1)
-    ax0.add_patch(Circle((0.5, 0.5), 0.1,color="black"))
-    plt.tick_params(axis='both', which='major', labelsize=15)
-    cbar0.ax.tick_params(labelsize=15)
-    plt.show()
