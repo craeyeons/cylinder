@@ -69,7 +69,6 @@ def contour(x, y, z, title, levels=100):
     font1 = {'family':'serif','size':20}
     plt.contour(x, y, z, colors='k', linewidths=0.2, levels=levels)
     plt.contourf(x, y, z, cmap='rainbow', levels=levels, norm=Normalize(vmin=vmin, vmax=vmax))
-    plt.axes()
     circle = plt.Circle((0.5,0.5),0.1, fc='black')
     plt.gca().add_patch(circle)
     plt.axis('scaled')
@@ -98,7 +97,7 @@ if __name__ == '__main__':
     # density
     rho = 1
     # viscosity
-    mu = 1
+    mu = 0.01
     # Re = rho/mu
     Re = rho * u0 / mu
 
