@@ -4,7 +4,7 @@ scipy==1.10.1
 matplotlib==3.7.1
 scipy==1.10.1
 tensorflow[and-cuda]==2.15.1
-nvidia-cudnn-cu12==8.9.7.29
-nvidia-cublas-cu12==12.3.4.1
-nvidia-cuda-nvrtc-cu12==12.3.107
-nvidia-cuda-runtime-cu12==12.3.101
+nvidia-cudnn-cu12==8.9.4.25
+nvidia-cublas-cu12==12.2.5.6
+nvidia-cuda-nvrtc-cu12==12.2.140
+nvidia-cuda-runtime-cu12==12.2.140
