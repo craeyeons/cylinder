@@ -179,25 +179,35 @@ if __name__ == '__main__':
     u = u.reshape(x.shape)
     v = v.reshape(x.shape)
     p = p.reshape(x.shape)
+    # Compute velocity magnitude
+    vel_mag = np.sqrt(u**2 + v**2)
+    
     # plot test results
-
-    filename_suffix = "_cylinder_" + str(Re) + ".png"
+    filename_suffix = "_cylinder_Re" + str(int(Re)) + ".png"
 
     fig = plt.figure(figsize=(16, 8))
-    contour(x, y, p, 'p')
+    contour(x, y, p, 'Pressure')
     plt.tight_layout()
     plt.savefig('p' + filename_suffix, dpi=300)
+    plt.close()
 
     fig = plt.figure(figsize=(16, 8))
-    contour(x, y, u, 'u')
+    contour(x, y, u, 'u-velocity')
     plt.tight_layout()
     plt.savefig('u' + filename_suffix, dpi=300)
+    plt.close()
 
     fig = plt.figure(figsize=(16, 8))
-    contour(x, y, v, 'v')
+    contour(x, y, v, 'v-velocity')
     plt.tight_layout()
     plt.savefig('v' + filename_suffix, dpi=300)
+    plt.close()
+
+    fig = plt.figure(figsize=(16, 8))
+    contour(x, y, vel_mag, 'Velocity Magnitude')
+    plt.tight_layout()
+    plt.savefig('vel_mag' + filename_suffix, dpi=300)
+    plt.close()
 
     # save model 
-    network.save('models/pinn_cylinder_' + str(Re) + '.h5')
-    
+    network.save('models/pinn_cylinder_Re' + str(int(Re)) + '.h5')
