@@ -77,7 +77,7 @@ def contour(x, y, z, title, levels=100):
     plt.ylabel("y", fontdict = font1)
     plt.tick_params(axis='both', which='major', labelsize=15)
 
-    cbar = plt.colorbar(pad=0.03, aspect=25, format='%.0e')
+    cbar = plt.colorbar(pad=0.03, aspect=25, format='%.2f')
     cbar.mappable.set_clim(vmin, vmax)
     cbar.ax.tick_params(labelsize=15)
 
@@ -88,9 +88,9 @@ if __name__ == '__main__':
     """
 
     # number of training samples
-    num_train_samples = 5000
+    num_train_samples = 20000
     # number of test samples
-    num_test_samples = 200
+    num_test_samples = 2000
 
     # inlet flow velocity
     u0 = 1
