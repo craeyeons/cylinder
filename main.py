@@ -171,9 +171,9 @@ if __name__ == '__main__':
     #onze[...,0] = u0
     #onze[...,1] = 0
     #onze[...,2] = u0
-    a = u_0(tf.constant(xyt_in)).numpy()
-    b = np.zeros((num_train_samples, 1))
-    onze = np.random.permutation(np.concatenate([a,b,a],axis = -1))
+    u_in = u_0(tf.constant(xyt_in)).numpy()
+    v_in = np.zeros((num_train_samples, 1))
+    onze = np.random.permutation(np.concatenate([u_in, v_in, u_in], axis=-1))
 
     y_train = [zeros, onze, zeros, zeros, zeros, zeros]
 
