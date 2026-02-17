@@ -7,6 +7,7 @@ from matplotlib.gridspec import GridSpec
 from pinn import PINN
 from network import Network
 from optimizer import L_BFGS_B
+import argparse
 
 
 
@@ -50,7 +51,7 @@ def u_0(xy):
     return    4*y*(1 - y) 
 
 
-def contour(x, y, z, title, levels=100):
+def contour(x, y, z, title, cylinder_x=0.5, cylinder_y=0.5, cylinder_radius=0.1, levels=100):
     """
     Contour plot.
     Args:
@@ -59,6 +60,9 @@ def contour(x, y, z, title, levels=100):
         y: y-array.
         z: z-array.
         title: title string.
+        cylinder_x: x-coordinate of cylinder center.
+        cylinder_y: y-coordinate of cylinder center.
+        cylinder_radius: radius of cylinder.
         levels: number of contour lines.
     """
 
@@ -69,7 +73,7 @@ def contour(x, y, z, title, levels=100):
     font1 = {'family':'serif','size':20}
     plt.contour(x, y, z, colors='k', linewidths=0.2, levels=levels)
     plt.contourf(x, y, z, cmap='rainbow', levels=levels, norm=Normalize(vmin=vmin, vmax=vmax))
-    circle = plt.Circle((0.5,0.5),0.1, fc='black')
+    circle = plt.Circle((cylinder_x, cylinder_y), cylinder_radius, fc='black')
     plt.gca().add_patch(circle)
     plt.axis('scaled')
     plt.title(title, fontdict = font1)
@@ -87,19 +91,34 @@ if __name__ == '__main__':
     for the cavity flow governed by the steady Navier-Stokes equation.
     """
 
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='PINN for flow around a cylinder')
+    parser.add_argument('--cylinder-x', type=float, default=0.5, help='X-coordinate of cylinder center')
+    parser.add_argument('--cylinder-y', type=float, default=0.5, help='Y-coordinate of cylinder center')
+    parser.add_argument('--cylinder-radius', type=float, default=0.1, help='Radius of cylinder')
+    parser.add_argument('--re', type=float, default=100, help='Reynolds number')
+    parser.add_argument('--model-name', type=str, default=None, help='Name for saved model file (without extension)')
+    args = parser.parse_args()
+
+    # Cylinder parameters from command line
+    Cx = args.cylinder_x
+    Cy = args.cylinder_y
+    a = args.cylinder_radius
+    b = args.cylinder_radius
+
     # number of training samples
     num_train_samples = 20000
     # number of test samples
     num_test_samples = 2000
 
-    # inlet flow velocity
-    u0 = 1
     # density
     rho = 1
     # viscosity
     mu = 0.01
-    # Re = rho/mu
-    Re = rho * u0 / mu
+    # Reynolds number from command line
+    Re = args.re
+    # inlet flow velocity (computed from Re = rho * u0 / mu)
+    u0 = Re * mu / rho
 
     # build a core network model
     network = Network().build()
@@ -112,10 +131,6 @@ if __name__ == '__main__':
     x_ini=0
     y_f=1
     y_ini=0
-    Cx = 0.5
-    Cy = 0.5
-    a = 0.1
-    b = 0.1
 
     xyt_circle = np.random.rand(num_train_samples, 2)
     xyt_circle[...,0] = 2*(a)*xyt_circle[...,0] +(Cx-a)
@@ -186,28 +201,29 @@ if __name__ == '__main__':
     filename_suffix = "_cylinder_Re" + str(int(Re)) + ".png"
 
     fig = plt.figure(figsize=(16, 8))
-    contour(x, y, p, 'Pressure')
+    contour(x, y, p, 'Pressure', Cx, Cy, a)
     plt.tight_layout()
     plt.savefig('p' + filename_suffix, dpi=300)
     plt.close()
 
     fig = plt.figure(figsize=(16, 8))
-    contour(x, y, u, 'u-velocity')
+    contour(x, y, u, 'u-velocity', Cx, Cy, a)
     plt.tight_layout()
     plt.savefig('u' + filename_suffix, dpi=300)
     plt.close()
 
     fig = plt.figure(figsize=(16, 8))
-    contour(x, y, v, 'v-velocity')
+    contour(x, y, v, 'v-velocity', Cx, Cy, a)
     plt.tight_layout()
     plt.savefig('v' + filename_suffix, dpi=300)
     plt.close()
 
     fig = plt.figure(figsize=(16, 8))
-    contour(x, y, vel_mag, 'Velocity Magnitude')
+    contour(x, y, vel_mag, 'Velocity Magnitude', Cx, Cy, a)
     plt.tight_layout()
     plt.savefig('vel_mag' + filename_suffix, dpi=300)
     plt.close()
 
     # save model 
-    network.save('models/pinn_cylinder_Re' + str(int(Re)) + '.h5')
+    model_name = args.model_name if args.model_name else 'pinn_cylinder_Re' + str(int(Re) + '_' + str(Cx) + '_' + str(Cy) + '_' + str(a))
+    network.save('models/' + model_name + '.h5')
