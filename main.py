@@ -225,5 +225,5 @@ if __name__ == '__main__':
     plt.close()
 
     # save model 
-    model_name = args.model_name if args.model_name else 'pinn_cylinder_Re' + str(int(Re) + '_' + str(Cx) + '_' + str(Cy) + '_' + str(a))
+    model_name = args.model_name if args.model_name else 'pinn_cylinder_Re' + str(int(Re)) + '_' + str(Cx) + '_' + str(Cy) + '_' + str(a)
     network.save('models/' + model_name + '.h5')
